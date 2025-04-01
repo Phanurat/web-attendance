@@ -1,7 +1,7 @@
 <?php
-$servername = "db";  // ใช้ชื่อบริการใน docker-compose (db)
+$servername = "db";  // ชื่อของ service ใน docker-compose.yml
 $username = "user";
-$password = "1111";
+$password = "password";
 $dbname = "attendance_system";  // ชื่อฐานข้อมูลที่ใช้
 
 // สร้างการเชื่อมต่อ
