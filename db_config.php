@@ -1,8 +1,8 @@
 <?php
-$servername = "localhost";
-$username = "root"; // หรือใช้ username ของ MySQL
-$password = ""; // หรือใช้ password ของ MySQL
-$dbname = "attendance_system"; // ชื่อฐานข้อมูลที่ใช้
+$servername = "db";  // ใช้ชื่อบริการใน docker-compose (db)
+$username = "user";
+$password = "";
+$dbname = "attendance_system";  // ชื่อฐานข้อมูลที่ใช้
 
 // สร้างการเชื่อมต่อ
 $conn = new mysqli($servername, $username, $password, $dbname);
