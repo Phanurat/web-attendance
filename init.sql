@@ -1,5 +1,5 @@
 -- สร้างฐานข้อมูล
-CREATE DATABASE IF NOT EXISTS attendance_db;
+CREATE DATABASE IF NOT EXISTS attendance_system;
 
 -- สร้างตาราง users
 CREATE TABLE IF NOT EXISTS users (

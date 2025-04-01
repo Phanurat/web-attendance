@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root"; // หรือใช้ username ของ MySQL
 $password = ""; // หรือใช้ password ของ MySQL
-$dbname = "attendance_db"; // ชื่อฐานข้อมูลที่ใช้
+$dbname = "attendance_system"; // ชื่อฐานข้อมูลที่ใช้
 
 // สร้างการเชื่อมต่อ
 $conn = new mysqli($servername, $username, $password, $dbname);
