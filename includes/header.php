@@ -1,10 +1,3 @@
-<?php
-// ตรวจสอบว่า session ได้เริ่มต้นหรือไม่
-if (!isset($_SESSION)) {
-    session_start();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
