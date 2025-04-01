@@ -1,14 +1,14 @@
 <?php
-$servername = getenv('MYSQL_HOST') ?: "db"; // ตั้งชื่อเซิร์ฟเวอร์ฐานข้อมูลให้ตรงกับบริการ db ใน docker-compose
-$username = "user";
-$password = "password";
-$dbname = "attendance_system";
+$servername = "localhost";
+$username = "root"; // หรือใช้ username ของ MySQL
+$password = ""; // หรือใช้ password ของ MySQL
+$dbname = "attendance_db"; // ชื่อฐานข้อมูลที่ใช้
 
 // สร้างการเชื่อมต่อ
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // ตรวจสอบการเชื่อมต่อ
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("การเชื่อมต่อฐานข้อมูลล้มเหลว: " . $conn->connect_error);
 }
 ?>
