@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $time_out = date('H:i:s');
     
     // บันทึกข้อมูลเวลาออก
-    $sql = "UPDATE attendance SET time_out = '$time_out' WHERE employee_id = '$employee_id' AND date = '$date' AND time_out IS NULL";
+    $sql = "UPDATE attendance SET time_out = '$time_out' WHERE username = '$employee_id' AND date = '$date' AND time_out IS NULL";
     
     if ($conn->query($sql) === TRUE) {
         echo "บันทึกเวลาออกเรียบร้อย";

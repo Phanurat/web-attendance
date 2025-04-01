@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $time_in = date('H:i:s');
     
     // บันทึกข้อมูลเวลาเข้า
-    $sql = "INSERT INTO attendance (employee_id, date, time_in) VALUES ('$employee_id', '$date', '$time_in')";
+    $sql = "INSERT INTO attendance (username, date, time_in) VALUES ('$employee_id', '$date', '$time_in')";
     
     if ($conn->query($sql) === TRUE) {
         echo "บันทึกเวลาเข้าเรียบร้อย";
