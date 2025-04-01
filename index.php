@@ -6,9 +6,10 @@ include('includes/header.php');
 if (!isset($_SESSION['username'])) {
     echo "กรุณาเข้าสู่ระบบ <a href='login.php'>ที่นี่</a>";
     exit;
+}else{
+    echo "ยินดีต้อนรับ, " . $_SESSION['username'];
 }
 
-echo "ยินดีต้อนรับ, " . $_SESSION['username'];
 ?>
 
 <h2>ระบบเช็คเข้าออกงาน</h2>

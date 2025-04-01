@@ -9,7 +9,7 @@ CREATE TABLE users (
 
 CREATE TABLE attendance (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT NOT NULL,
+    employee_id VARCHAR NOT NULL,
     date DATE NOT NULL,
     time_in TIME,
     time_out TIME,

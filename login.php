@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     ชื่อผู้ใช้: <input type="text" name="username" required><br>
     รหัสผ่าน: <input type="password" name="password" required><br>
     <input type="submit" value="เข้าสู่ระบบ">
+    <p><a href="register.php">Register</a></p>
 </form>
 
 <?php
