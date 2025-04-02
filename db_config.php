@@ -1,7 +1,7 @@
 <?php
-$servername = "localhost";  // ชื่อของ service ใน docker-compose.yml
-$username = "root";
-$password = "";
+$servername = "db";  // ชื่อของ service ใน docker-compose.yml
+$username = "admin";
+$password = "1111";
 $dbname = "attendance";  // ชื่อฐานข้อมูลที่ใช้
 
 // สร้างการเชื่อมต่อ
