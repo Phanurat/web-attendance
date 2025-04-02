@@ -1,6 +1,6 @@
 <?php
 $servername = "db";  // ชื่อของ service ใน docker-compose.yml
-$username = "admin";
+$username = "root";
 $password = "1111";
 $dbname = "attendance";  // ชื่อฐานข้อมูลที่ใช้
 
