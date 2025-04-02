@@ -14,7 +14,7 @@ services:
     environment:
       - MYSQL_HOST=db
       - MYSQL_DATABASE=attendance
-      - MYSQL_USER=admin  
+      - MYSQL_USER=admin 
       - MYSQL_PASSWORD=1111
 
   db:
@@ -22,8 +22,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword  
       MYSQL_DATABASE: attendance
-      MYSQL_USER=admin  
-      MYSQL_PASSWORD=1111
+      MYSQL_USER: admin  
+      MYSQL_PASSWORD: 1111
     volumes:
       - db_data:/var/lib/mysql
     networks:
