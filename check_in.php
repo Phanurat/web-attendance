@@ -1,4 +1,5 @@
 <?php
+session_start();  // เริ่ม session เพื่อใช้ $_SESSION
 include('db_config.php');
 include('includes/header.php');
 
@@ -8,23 +9,48 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+date_default_timezone_set('Asia/Bangkok');
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $employee_id = $_SESSION['username']; // ใช้ session username เป็นรหัสพนักงาน
-    $date = date('Y-m-d');
-    $time_in = date('H:i:s');
-    
-    // บันทึกข้อมูลเวลาเข้า
-    $sql = "INSERT INTO attendance (username, date, time_in) VALUES ('$employee_id', '$date', '$time_in')";
-    
-    if ($conn->query($sql) === TRUE) {
-        echo "บันทึกเวลาเข้าเรียบร้อย";
+    // ใช้ session username เป็นรหัสพนักงาน
+    $employee_id = $_SESSION['username']; 
+
+    // ตรวจสอบว่า user มี id จริงในตาราง users
+    $sql = "SELECT id, username FROM users WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $employee_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $user_id = $row['id'];  // ได้รหัสผู้ใช้
+        $username = $row['username'];  // ได้ username
+
+        // บันทึกข้อมูลเวลาเข้า
+        $date = date('Y-m-d');
+        $time_in = date('H:i:s');
+
+        // ใช้ Prepared Statements เพื่อป้องกัน SQL Injection
+        $sql = "INSERT INTO attendance (users_id, username, date, time_in) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("isss", $user_id, $username, $date, $time_in);  // ผูกค่าทั้งหมด
+        
+        if ($stmt->execute()) {
+            echo "บันทึกเวลาออกเรียบร้อย";
+            echo "<br>วันที่: " . $date . "<br>เวลาออก: " . $time_out . "<br>ชื่อผู้ใช้: " . $username;
+        } else {
+            echo "เกิดข้อผิดพลาด: " . $stmt->error;
+        }
     } else {
-        echo "เกิดข้อผิดพลาด: " . $conn->error;
+        echo "ไม่พบข้อมูลผู้ใช้ในระบบ";
     }
 }
 ?>
 
 <h2>บันทึกเวลาเข้า</h2>
+<a href="index.php">หน้าแรก</a>
+<a href="logout.php">ออกจากระบบ</a>
 <form method="POST">
     <input type="submit" value="บันทึกเวลาเข้า">
 </form>

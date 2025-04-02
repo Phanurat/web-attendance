@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบเช็คอิน/เช็คเอาท์</title>
+    <link rel="stylesheet" href="styles.css"> <!-- ใช้ไฟล์ CSS ของคุณ -->
 </head>
 <body>
-    <!-- เมนูหรือสิ่งที่ต้องการแสดงใน header -->
-    <nav>
-        <a href="index.php">หน้าแรก</a>
-        <a href="login.php">เข้าสู่ระบบ</a>
-        <a href="logout.php">ออกจากระบบ</a>
-    </nav>
+    <!-- ส่วนของ Header ที่สามารถใช้ในทุกหน้า -->
+    <header>
+        <h1>ระบบเช็คอิน/เช็คเอาท์</h1>
+    </header>
+
+    <!-- เมนูหรือการนำทาง -->
+

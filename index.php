@@ -6,17 +6,28 @@ include('includes/header.php');
 if (!isset($_SESSION['username'])) {
     echo "กรุณาเข้าสู่ระบบ <a href='login.php'>ที่นี่</a>";
     exit;
-}else{
-    echo "ยินดีต้อนรับ, " . $_SESSION['username'];
 }
-
 ?>
 
-<h2>ระบบเช็คเข้าออกงาน</h2>
-<p><a href="check_in.php">คลิกที่นี่เพื่อบันทึกเวลาเข้า</a></p>
-<p><a href="check_out.php">คลิกที่นี่เพื่อบันทึกเวลาออก</a></p>
-<p><a href="logout.php">ออกจากระบบ</a></p>
+
 
 <?php
 include('includes/footer.php');
 ?>
+<nav>
+        <?php if (isset($_SESSION['username'])): ?>
+            <!-- ถ้าผู้ใช้เข้าสู่ระบบแล้ว -->
+            <?php
+                $username = htmlspecialchars($_SESSION['username']); // ป้องกันการโจมตีจาก XSS
+                echo "ยินดีต้อนรับ, " . $username;
+            ?>
+            <a href="logout.php">ออกจากระบบ</a>
+        <?php else: ?>
+            <!-- ถ้ายังไม่ได้เข้าสู่ระบบ -->
+            <a href="login.php">เข้าสู่ระบบ</a>
+            <a href="register.php">สมัครสมาชิก</a>
+        <?php endif; ?>
+    </nav>
+
+    <p><a href="check_in.php">คลิกที่นี่เพื่อบันทึกเวลาเข้า</a></p>
+    <p><a href="check_out.php">คลิกที่นี่เพื่อบันทึกเวลาออก</a></p>
