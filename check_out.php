@@ -36,9 +36,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt->execute()) {
             echo "บันทึกเวลาออกเรียบร้อย";
             echo "<br>วันที่: " . $date . "<br>เวลาออก: " . $time_out . "<br>ชื่อผู้ใช้: " . $username;
+            
+            include('api.php');
+            
+            // สร้างข้อความที่ต้องการส่ง
+            $data_checkout = "วันที่: " . $date . "\nเวลาออก: " . $time_out . "\nชื่อผู้ใช้: " . $username;
+            
+            // เตรียมข้อมูลสำหรับ API
+            $data = [
+                'to' => $to,
+                'messages' => [
+                    [
+                        'type' => 'text',
+                        'text' => $data_checkout
+                    ]
+                ]
+            ];
+            
+            // ส่งข้อมูลผ่าน cURL
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            if ($response === false) {
+                echo "เกิดข้อผิดพลาดในการส่งข้อความ";
+            } else {
+                echo "ข้อความถูกส่งสำเร็จ";
+            }
         } else {
             echo "เกิดข้อผิดพลาด: " . $stmt->error;
         }
+        
     } else {
         echo "ไม่พบข้อมูลผู้ใช้ในระบบ";
     }

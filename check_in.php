@@ -38,10 +38,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         if ($stmt->execute()) {
             echo "บันทึกเวลาออกเรียบร้อย";
-            echo "<br>วันที่: " . $date . "<br>เวลาออก: " . $time_out . "<br>ชื่อผู้ใช้: " . $username;
+            echo "<br>วันที่: " . $date . "<br>เวลาเข้า: " . $time_in . "<br>ชื่อผู้ใช้: " . $username;
+        
+            include('api.php');
+        
+            // ใช้ \n แทน <br> ถ้าต้องการส่งเป็นข้อความธรรมดา
+            $data_checkin = "วันที่: " . $date . "\nเวลาเข้า: " . $time_in . "\nชื่อผู้ใช้: " . $username;
+        
+            // ตรวจสอบตัวแปรที่ใช้ใน cURL ว่ามีค่าหรือไม่
+            if (!isset($to, $url, $headers)) {
+                die("เกิดข้อผิดพลาด: ตัวแปร API ไม่ถูกต้อง");
+            }
+        
+            // สร้าง Payload สำหรับ API
+            $data = [
+                'to' => $to,
+                'messages' => [
+                    [
+                        'type' => 'text',
+                        'text' => $data_checkin
+                    ]
+                ]
+            ];
+        
+            // ตั้งค่าและเรียกใช้ cURL
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        
+            $response = curl_exec($ch);
+            $error = curl_error($ch);
+            curl_close($ch);
+        
+            // ตรวจสอบการส่งข้อมูล
+            if ($response === false) {
+                echo "เกิดข้อผิดพลาดในการส่งข้อความ: " . $error;
+            } else {
+                echo "ข้อความถูกส่งสำเร็จ: " . $response;
+            }
         } else {
             echo "เกิดข้อผิดพลาด: " . $stmt->error;
         }
+        
     } else {
         echo "ไม่พบข้อมูลผู้ใช้ในระบบ";
     }
