@@ -37,36 +37,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "บันทึกเวลาออกเรียบร้อย";
             echo "<br>วันที่: " . $date . "<br>เวลาออก: " . $time_out . "<br>ชื่อผู้ใช้: " . $username;
             
-            include('api.php');
-            
-            // สร้างข้อความที่ต้องการส่ง
-            $data_checkout = "วันที่: " . $date . "\nเวลาออก: " . $time_out . "\nชื่อผู้ใช้: " . $username;
-            
-            // เตรียมข้อมูลสำหรับ API
-            $data = [
-                'to' => $to,
-                'messages' => [
-                    [
-                        'type' => 'text',
-                        'text' => $data_checkout
-                    ]
-                ]
-            ];
-            
-            // ส่งข้อมูลผ่าน cURL
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            
-            $response = curl_exec($ch);
-            curl_close($ch);
-            
-            if ($response === false) {
-                echo "เกิดข้อผิดพลาดในการส่งข้อความ";
-            } else {
-                echo "ข้อความถูกส่งสำเร็จ";
+            #include('api.php');
+
+            $select_token = $conn->query("SELECT * FROM token");
+
+            while ($row=$select_token->fetch_assoc()){
+                if ($row["action"] == 1){
+                    $data_checkout = "วันที่: " . $date . "\nเวลาออก: " . $time_out . "\nชื่อผู้ใช้: " . $username;
+                    $access_token = $row['token_bot'];
+                    $url = 'https://api.line.me/v2/bot/message/push';
+                    $to = $row['token_group'];
+                    $headers = [
+                        'Content-Type: application/json',
+                        'Authorization: Bearer ' . $access_token
+                    ];
+
+                    if (!isset($to, $url, $headers)) {
+                        die("เกิดข้อผิดพลาด: ตัวแปร API ไม่ถูกต้อง");
+                    }
+                    // เตรียมข้อมูลสำหรับ API
+                    $data = [
+                        'to' => $to,
+                        'messages' => [
+                            [
+                                'type' => 'text',
+                                'text' => $data_checkout
+                            ]
+                        ]
+                    ];
+                    
+                    $ch = curl_init($url);
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                    
+                    $response = curl_exec($ch);
+                    curl_close($ch);
+                    
+                    if ($response === false) {
+                        echo "เกิดข้อผิดพลาดในการส่งข้อความ";
+                    } else {
+                        echo "ข้อความถูกส่งสำเร็จ";
+                    }
+                }
             }
         } else {
             echo "เกิดข้อผิดพลาด: " . $stmt->error;

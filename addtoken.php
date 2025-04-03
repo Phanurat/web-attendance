@@ -33,6 +33,7 @@ if (isset($_GET['delete'])) {
     <form method="post">
         <input type="text" name="token_bot" placeholder="Enter token bot" required>
         <input type="text" name="token_group" placeholder="Enter token group" required>
+        <input type="text" name="name_group" placeholder="Enter Name group" required>
         <input type="text" name="name" placeholder="Enter name" required>
         <button type="submit" name="create">Create</button>
     </form>
@@ -44,6 +45,7 @@ if (isset($_GET['delete'])) {
             <th>ID</th>
             <th>Token Bot</th>
             <th>Token Group</th>
+            <th>Name Group</th>
             <th>Name</th>
             <th>Action</th>
         </tr>
@@ -54,6 +56,7 @@ if (isset($_GET['delete'])) {
                     <td>{$row['token_id']}</td>
                     <td>{$row['token_bot']}</td>
                     <td>{$row['token_group']}</td>
+                    <td>{$row['name_group']}</td>
                     <td>{$row['name']}</td>
                     <td>{$row['action']}</td>
                     <td>
@@ -62,8 +65,9 @@ if (isset($_GET['delete'])) {
                             <input type='hidden' name='id' value='{$row['token_id']}'>
                             <input type='text' name='token_bot' value='{$row['token_bot']}'>
                             <input type='text' name='token_group' value='{$row['token_group']}'>
+                            <input type='text' name='name_group' value='{$row['name_group']}'>
                             <input type='text' name='name' value='{$row['name']}'>
-                            <input type='text' name='name' value='{$row['action']}'>
+                            <input type='text' name='action' value='{$row['action']}'>
                             <button type='submit' name='update'>Update</button>
                         </form>
                     </td>
