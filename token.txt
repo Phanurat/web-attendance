@@ -1,0 +1,5 @@
+Channelsecret: e8c11761574ed426b9e30146368c36b6
+userID: U4d7ce0d3cc99d4a47a53bb1782012447
+group test:Cc1aef195828e7c6f5b8d38d845456e1b
+token : 7tb3Jg/mVxCxrjd2GNueeIKE1fJUqygall4D+iiLGYblgi0lwrDXavuT51O4t0d0hiCDxPpbURV/zlM7zf1yPYl52ioR4mLmZu7gn9R2NLy87/4+NOu5EUSwKfIRB85WUGpJX0Rh9e16LOKH/oSoPQdB04t89/1O/w1cDnyilFU=
+
