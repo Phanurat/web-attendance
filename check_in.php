@@ -38,39 +38,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $select_token = $conn->query("SELECT * FROM token");
 
             while ($row = $select_token->fetch_assoc()) {
-                if ($row["action"] == 1) {
-                    $data_checkin = "วันที่: " . $date . "\nเวลาเข้า: " . $time_in . "\nชื่อผู้ใช้: " . $username;
-                    $access_token = $row['token_bot'];
-                    $url = 'https://api.line.me/v2/bot/message/push';
-                    $to = $row['token_group'];
-                    $headers = [
-                        'Content-Type: application/json',
-                        'Authorization: Bearer ' . $access_token
-                    ];
+                // if ($row["action"] == 1) {
+                //     $data_checkin = "วันที่: " . $date . "\nเวลาเข้า: " . $time_in . "\nชื่อผู้ใช้: " . $username;
+                //     $access_token = $row['token_bot'];
+                //     $url = 'https://api.line.me/v2/bot/message/push';
+                //     $to = $row['token_group'];
+                //     $headers = [
+                //         'Content-Type: application/json',
+                //         'Authorization: Bearer ' . $access_token
+                //     ];
 
-                    $data = [
-                        'to' => $to,
-                        'messages' => [
-                            ['type' => 'text', 'text' => $data_checkin]
-                        ]
-                    ];
+                //     $data = [
+                //         'to' => $to,
+                //         'messages' => [
+                //             ['type' => 'text', 'text' => $data_checkin]
+                //         ]
+                //     ];
 
-                    $ch = curl_init($url);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                //     $ch = curl_init($url);
+                //     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+                //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                //     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
-                    $response = curl_exec($ch);
-                    $error = curl_error($ch);
-                    curl_close($ch);
+                //     $response = curl_exec($ch);
+                //     $error = curl_error($ch);
+                //     curl_close($ch);
 
-                    if ($response === false) {
-                        $message .= "<br><span style='color:red;'>เกิดข้อผิดพลาดในการส่ง LINE: $error</span>";
-                    } else {
-                        $message .= "<br><span style='color:green;'>📨 แจ้งเตือนผ่าน LINE สำเร็จ</span>";
-                    }
-                }
+                //     if ($response === false) {
+                //         $message .= "<br><span style='color:red;'>เกิดข้อผิดพลาดในการส่ง LINE: $error</span>";
+                //     } else {
+                //         $message .= "<br><span style='color:green;'>📨 แจ้งเตือนผ่าน LINE สำเร็จ</span>";
+                //     }
+                // }
+                include('api/discord_api.php');
+                $data_checkin = [
+                    "username" => $username,
+                    "date" => $date,
+                    "time_in" => $time_in
+                ];
+                send_to_discord($data_checkin);
             }
         } else {
             $message = "เกิดข้อผิดพลาด: " . $stmt->error;
