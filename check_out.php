@@ -69,46 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 //     }
                 // }
                 include('api/discord_api_out.php');
-                $data_checkout = [
+                $data_checkin = [
                     "username" => $username,
                     "date" => $date,
-                    "time_out" => $time_out
+                    "time_in" => $time_in
                 ];
-                send_to_discord($data_checkout);
-                $url = "http://192.168.1.140:8000/"; 
-
-                // ตั้งค่าหัวข้อ (Headers) สำหรับการส่งข้อมูลเป็น JSON
-                $headers = [
-                    "Content-Type: application/json"
-                ];
-
-                // แปลงข้อมูลเป็น JSON
-                $json_data = json_encode($data_checkout);
-
-                // ใช้ cURL ส่งข้อมูลไปยัง Flask API
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
-                curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // รับผลลัพธ์จากการทำงาน
-
-                // รับการตอบกลับจาก Flask API
-                $response = curl_exec($ch);
-
-                // ตรวจสอบข้อผิดพลาดในการทำงานของ cURL
-                if (curl_errno($ch)) {
-                    echo 'Error:' . curl_error($ch);
-                }
-
-                // ปิดการเชื่อมต่อ cURL
-                curl_close($ch);
-
-                // แสดงผลลัพธ์จาก API
-                if ($response) {
-                    echo "API Response: " . $response;  // แสดงผลลัพธ์จาก Flask API
-                } else {
-                    echo "No response from API.";
-                }
+                send_to_discord($data_checkin);
             }
         } else {
             $message = "เกิดข้อผิดพลาด: " . $stmt->error;
