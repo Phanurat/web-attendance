@@ -72,9 +72,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $data_checkin = [
                     "username" => $username,
                     "date" => $date,
-                    "time_in" => $time_in
+                    "time_out" => $time_out
                 ];
                 send_to_discord($data_checkin);
+
+                $url = "http://192.168.1.140:8000/";
+                $headers = [
+                    "Content-Type: application/json"
+                ];
+                $json_data = json_encode($data_checkin);
+
+                // ใช้ cURL ส่งข้อมูลไปยัง Flask API
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
+                curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // รับผลลัพธ์จากการทำงาน
+
+                // รับการตอบกลับจาก Flask API
+                $response = curl_exec($ch);
+
+                // ตรวจสอบข้อผิดพลาดในการทำงานของ cURL
+                if (curl_errno($ch)) {
+                    echo 'Error:' . curl_error($ch);
+                }
+
+                // ปิดการเชื่อมต่อ cURL
+                curl_close($ch);
+
             }
         } else {
             $message = "เกิดข้อผิดพลาด: " . $stmt->error;

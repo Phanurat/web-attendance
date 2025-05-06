@@ -11,7 +11,7 @@ function send_to_discord($data) {
             "description" =>
                 "\n👤 ชื่อผู้ใช้ : `{$data['username']}`\n\n" .
                 "📅 วันที่ : {$data['date']}\n\n" .
-                "⏰ เวลาเวลาออก : {$data['time_in']}",
+                "⏰ เวลาเวลาออก : {$data['time_out']}",
             "footer" => [
                 "text" => "ZKTime System",
                 "icon_url" => "https://yourdomain.com/img/img1.png"
