@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     "time_out" => $time_out
                 ];
                 send_to_discord($data_checkin);
-                $url = "http://192.168.1.140:8000/"; 
+                $url = "http://192.168.1.154:8000/"; 
 
                 // ตั้งค่าหัวข้อ (Headers) สำหรับการส่งข้อมูลเป็น JSON
                 $headers = [
