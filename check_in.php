@@ -64,25 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
                 curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // รับผลลัพธ์จากการทำงาน
-
-                // รับการตอบกลับจาก Flask API
-                $response = curl_exec($ch);
-
-                // ตรวจสอบข้อผิดพลาดในการทำงานของ cURL
-                if (curl_errno($ch)) {
-                    echo 'Error:' . curl_error($ch);
-                }
-
-                // ปิดการเชื่อมต่อ cURL
-                curl_close($ch);
-
-                // แสดงผลลัพธ์จาก API
-                if ($response) {
-                    echo "API Response: " . $response;  // แสดงผลลัพธ์จาก Flask API
-                } else {
-                    echo "No response from API.";
-                }
             }
             
             // หมายเหตุ: ไม่ใช้ return ภายใน while loop
