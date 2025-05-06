@@ -38,47 +38,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $select_token = $conn->query("SELECT * FROM token");
 
             while ($row = $select_token->fetch_assoc()) {
-                // if ($row["action"] == 1) {
-                //     $data_checkin = "วันที่: " . $date . "\nเวลาเข้า: " . $time_in . "\nชื่อผู้ใช้: " . $username;
-                //     $access_token = $row['token_bot'];
-                //     $url = 'https://api.line.me/v2/bot/message/push';
-                //     $to = $row['token_group'];
-                //     $headers = [
-                //         'Content-Type: application/json',
-                //         'Authorization: Bearer ' . $access_token
-                //     ];
-
-                //     $data = [
-                //         'to' => $to,
-                //         'messages' => [
-                //             ['type' => 'text', 'text' => $data_checkin]
-                //         ]
-                //     ];
-
-                //     $ch = curl_init($url);
-                //     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                //     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-                //     $response = curl_exec($ch);
-                //     $error = curl_error($ch);
-                //     curl_close($ch);
-
-                //     if ($response === false) {
-                //         $message .= "<br><span style='color:red;'>เกิดข้อผิดพลาดในการส่ง LINE: $error</span>";
-                //     } else {
-                //         $message .= "<br><span style='color:green;'>📨 แจ้งเตือนผ่าน LINE สำเร็จ</span>";
-                //     }
-                // }
                 include('api/discord_api.php');
+                
                 $data_checkin = [
                     "username" => $username,
                     "date" => $date,
                     "time_in" => $time_in
                 ];
+            
+                // เรียกใช้ฟังก์ชันส่งข้อมูลไปยัง Discord
                 send_to_discord($data_checkin);
+            
+                $url = "http://192.168.1.140:8000/"; 
+
+                // ตั้งค่าหัวข้อ (Headers) สำหรับการส่งข้อมูลเป็น JSON
+                $headers = [
+                    "Content-Type: application/json"
+                ];
+
+                // แปลงข้อมูลเป็น JSON
+                $json_data = json_encode($data_checkin);
+
+                // ใช้ cURL ส่งข้อมูลไปยัง Flask API
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
+                curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // รับผลลัพธ์จากการทำงาน
+
+                // รับการตอบกลับจาก Flask API
+                $response = curl_exec($ch);
+
+                // ตรวจสอบข้อผิดพลาดในการทำงานของ cURL
+                if (curl_errno($ch)) {
+                    echo 'Error:' . curl_error($ch);
+                }
+
+                // ปิดการเชื่อมต่อ cURL
+                curl_close($ch);
+
+                // แสดงผลลัพธ์จาก API
+                if ($response) {
+                    echo "API Response: " . $response;  // แสดงผลลัพธ์จาก Flask API
+                } else {
+                    echo "No response from API.";
+                }
             }
+            
+            // หมายเหตุ: ไม่ใช้ return ภายใน while loop
+            
         } else {
             $message = "เกิดข้อผิดพลาด: " . $stmt->error;
         }
