@@ -64,6 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
                 curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // สำคัญมากสำหรับ error/debug
+
+                $response = curl_exec($ch);
+
+                if (curl_errno($ch)) {
+                    error_log('Flask API Error: ' . curl_error($ch));
+                }
+
+                curl_close($ch);
             }
             
             // หมายเหตุ: ไม่ใช้ return ภายใน while loop
