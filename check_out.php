@@ -15,101 +15,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $date = date('Y-m-d');
     $time_out = date('H:i:s');
 
-    $sql = "SELECT username FROM users WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $employee_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // ดึงข้อมูลผู้ใช้
+    $stmt = $conn->prepare("SELECT username FROM users WHERE username = ?");
+    if ($stmt === false) {
+        $message = "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL.";
+    } else {
+        $stmt->bind_param("s", $employee_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $username = $row['username'];
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $username = $row['username'];
 
-        $sql = "UPDATE attendance SET time_out = ? WHERE username = ? AND date = ? AND time_out IS NULL";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $time_out, $employee_id, $date);
+            // อัปเดต time_out เฉพาะแถวที่ยังไม่เคยบันทึก
+            $update_stmt = $conn->prepare("UPDATE attendance SET time_out = ? WHERE username = ? AND date = ? AND time_out IS NULL");
+            if ($update_stmt === false) {
+                $message = "เกิดข้อผิดพลาดในการเตรียมคำสั่งอัปเดต.";
+            } else {
+                $update_stmt->bind_param("sss", $time_out, $employee_id, $date);
+                if ($update_stmt->execute()) {
+                    $message = "<strong>✅ บันทึกเวลาออกเรียบร้อยแล้ว</strong><br>วันที่: $date<br>เวลาออก: $time_out<br>ชื่อผู้ใช้: $username";
 
-        if ($stmt->execute()) {
-            $message = "<strong>✅ บันทึกเวลาออกเรียบร้อยแล้ว</strong><br>วันที่: $date<br>เวลาออก: $time_out<br>ชื่อผู้ใช้: $username";
+                    // ส่ง webhook ไปยัง Discord และ Flask
+                    include('api/discord_api_out.php');
 
-            $select_token = $conn->query("SELECT * FROM token");
+                    $data_checkin = [
+                        "username" => $username,
+                        "date" => $date,
+                        "time_out" => $time_out
+                    ];
+                    send_to_discord($data_checkin);
 
-            while ($row = $select_token->fetch_assoc()) {
-                // if ($row["action"] == 1) {
-                //     $data_checkout = "วันที่: " . $date . "\nเวลาออก: " . $time_out . "\nชื่อผู้ใช้: " . $username;
-                //     $access_token = $row['token_bot'];
-                //     $url = 'https://api.line.me/v2/bot/message/push';
-                //     $to = $row['token_group'];
-                //     $headers = [
-                //         'Content-Type: application/json',
-                //         'Authorization: Bearer ' . $access_token
-                //     ];
+                    // ส่งไป Flask API
+                    $flask_url = "http://192.168.1.140:8000/";
+                    $headers = ["Content-Type: application/json"];
+                    $json_data = json_encode($data_checkin, JSON_UNESCAPED_UNICODE);
 
-                //     $data = [
-                //         'to' => $to,
-                //         'messages' => [
-                //             ['type' => 'text', 'text' => $data_checkout]
-                //         ]
-                //     ];
+                    $ch = curl_init($flask_url);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $response = curl_exec($ch);
 
-                //     $ch = curl_init($url);
-                //     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                //     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-                //     $response = curl_exec($ch);
-                //     $error = curl_error($ch);
-                //     curl_close($ch);
-
-                //     if ($response === false) {
-                //         $message .= "<br><span style='color:red;'>❌ ส่งข้อความไม่สำเร็จ: $error</span>";
-                //     } else {
-                //         $message .= "<br><span style='color:green;'>📨 ส่งข้อความ LINE สำเร็จ</span>";
-                //     }
-                // }
-                include('api/discord_api_out.php');
-                $data_checkin = [
-                    "username" => $username,
-                    "date" => $date,
-                    "time_out" => $time_out
-                ];
-                send_to_discord($data_checkin);
-
-                $url = "http://192.168.1.140:8000/";
-                $headers = [
-                    "Content-Type: application/json"
-                ];
-                $json_data = json_encode($data_checkin);
-
-                // ใช้ cURL ส่งข้อมูลไปยัง Flask API
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
-                curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // รับผลลัพธ์จากการทำงาน
-
-                // รับการตอบกลับจาก Flask API
-                $response = curl_exec($ch);
-
-                // ตรวจสอบข้อผิดพลาดในการทำงานของ cURL
-                if (curl_errno($ch)) {
-                    echo 'Error:' . curl_error($ch);
+                    if (curl_errno($ch)) {
+                        $message .= "<br><span style='color:red;'>❌ ไม่สามารถเชื่อมต่อ Flask API: " . curl_error($ch) . "</span>";
+                    } else {
+                        $message .= "<br><span style='color:green;'>📤 ส่งข้อมูลไปยัง Flask API สำเร็จ</span>";
+                    }
+                    curl_close($ch);
+                } else {
+                    $message = "❌ เกิดข้อผิดพลาดในการบันทึกเวลา: " . $update_stmt->error;
                 }
-
-                // ปิดการเชื่อมต่อ cURL
-                curl_close($ch);
-
             }
         } else {
-            $message = "เกิดข้อผิดพลาด: " . $stmt->error;
+            $message = "ไม่พบข้อมูลผู้ใช้ในระบบ";
         }
-
-    } else {
-        $message = "ไม่พบข้อมูลผู้ใช้ในระบบ";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="th">
