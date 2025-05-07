@@ -9,6 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $message = "";
+
 function sendAsyncRequest($url, $data_checkin){
     $json_data = json_encode($data_checkin);
     $headers = ["Content-Type: application/json"];
@@ -54,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $data_checkin = [
                     "username" => $username,
                     "date" => $date,
-                    "time_in" => $time_in,
                     "time_out" => $time_out
                 ];
                 send_to_discord($data_checkin);
@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 padding: 12px;
             }
         }
-    }
+
         .slot-container {
             display: flex;
             justify-content: center;
@@ -213,46 +213,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="message"><?= $message ?></div>
     <?php endif; ?>
 </div>
+
 <div class="slot-container">
-        <div class="slot"><div class="reel" id="reel1"></div></div>
-        <div class="slot"><div class="reel" id="reel2"></div></div>
-        <div class="slot"><div class="reel" id="reel3"></div></div>
-        <button onclick="spin()">ปั่นเลย!</button>
-        <script>
-            function spin() {
-                fetch("?spin=1")
-                    .then(res => res.json())
-                    .then(result => {
-                        const symbols = ['🍒', '🍋', '🍇', '🔔', '⭐', '7️⃣'];
-                        const reels = [result[0], result[1], result[2]];
+    <div class="slot"><div class="reel" id="reel1"></div></div>
+    <div class="slot"><div class="reel" id="reel2"></div></div>
+    <div class="slot"><div class="reel" id="reel3"></div></div>
+    <button onclick="spin()">ปั่นเลย!</button>
+    <script>
+        function spin() {
+            const symbols = ['🍒', '🍋', '🍇', '🔔', '⭐', '7️⃣'];
+            const reels = [symbols[Math.floor(Math.random() * symbols.length)], 
+                           symbols[Math.floor(Math.random() * symbols.length)], 
+                           symbols[Math.floor(Math.random() * symbols.length)]];
 
-                        for (let i = 0; i < 3; i++) {
-                            const reel = document.getElementById('reel' + (i+1));
-                            reel.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const reel = document.getElementById('reel' + (i+1));
+                reel.innerHTML = '';
 
-                            // เพิ่มสัญลักษณ์ปลอม 15 อัน
-                            for (let j = 0; j < 15; j++) {
-                                const el = document.createElement('div');
-                                el.className = 'symbol';
-                                el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                                reel.appendChild(el);
-                            }
+                // เพิ่มสัญลักษณ์ปลอม 15 อัน
+                for (let j = 0; j < 15; j++) {
+                    const el = document.createElement('div');
+                    el.className = 'symbol';
+                    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    reel.appendChild(el);
+                }
 
-                            // เพิ่มผลลัพธ์จริง
-                            const final = document.createElement('div');
-                            final.className = 'symbol';
-                            final.textContent = reels[i];
-                            reel.appendChild(final);
+                // เพิ่มผลลัพธ์จริง
+                const final = document.createElement('div');
+                final.className = 'symbol';
+                final.textContent = reels[i];
+                reel.appendChild(final);
 
-                            // ใช้ setTimeout เพื่อเลื่อนแต่ละรีลช้าทีละตัว
-                            setTimeout(() => {
-                                reel.style.transform = `translateY(-${80 * 15}px)`;
-                            }, i * 600); // 0ms, 600ms, 1200ms
-                        }
-                    });
+                // ใช้ setTimeout เพื่อเลื่อนแต่ละรีลช้าทีละตัว
+                setTimeout(() => {
+                    reel.style.transform = `translateY(-${80 * 15}px)`;
+                }, i * 600); // 0ms, 600ms, 1200ms
             }
-            </script>
-    </div>
+        }
+    </script>
+</div>
 
 </body>
 </html>

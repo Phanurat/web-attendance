@@ -20,8 +20,7 @@ function sendAsyncRequest($url, $data_checkin){
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); 
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100);
 
     curl_exec($ch);
     curl_close($ch);
@@ -51,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt->execute()) {
             $message = "<strong>✅ บันทึกเวลาเข้าเรียบร้อยแล้ว</strong><br>วันที่: $date<br>เวลาเข้า: $time_in<br>ชื่อผู้ใช้: $username";
 
+            // ส่งข้อมูลไปยัง Discord และ API
             $select_token = $conn->query("SELECT * FROM token");
 
             while ($row = $select_token->fetch_assoc()) {
@@ -221,6 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </script>
     <?php endif; ?>
 </div>
+
 <div class="slot-container">
     <h1>🎰 สล็อตแมชชีนสุดสวย</h1>
     <?php
@@ -247,18 +248,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 fetch("?spin=1")
                     .then(res => res.json())
                     .then(result => {
-                        const symbols = ['🍒', '🍋', '🍇', '🔔', '⭐', '7️⃣'];
                         const reels = [result[0], result[1], result[2]];
 
                         for (let i = 0; i < 3; i++) {
-                            const reel = document.getElementById('reel' + (i+1));
+                            const reel = document.getElementById('reel' + (i + 1));
                             reel.innerHTML = '';
 
                             // เพิ่มสัญลักษณ์ปลอม 15 อัน
                             for (let j = 0; j < 15; j++) {
                                 const el = document.createElement('div');
                                 el.className = 'symbol';
-                                el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                                el.textContent = reels[Math.floor(Math.random() * reels.length)];
                                 reel.appendChild(el);
                             }
 
@@ -275,9 +275,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         }
                     });
             }
-            </script>
+        </script>
     </div>
-    
 </div>
 
 </body>
