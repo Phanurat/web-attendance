@@ -11,6 +11,22 @@ if (!isset($_SESSION['username'])) {
 $message = "";
 date_default_timezone_set('Asia/Bangkok');
 
+function sendAsyncRequest($url, $data_checkin){
+    $json_data = json_encode($data_checkin);
+    $headers = ["Content-Type: application/json"];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); 
+
+    curl_exec($ch);
+    curl_close($ch);
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $employee_id = $_SESSION['username'];
 
@@ -46,37 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     "time_in" => $time_in
                 ];
             
-                // เรียกใช้ฟังก์ชันส่งข้อมูลไปยัง Discord
                 send_to_discord($data_checkin);
-            
-                $url = "http://192.168.1.154:8000/"; 
-
-                // ตั้งค่าหัวข้อ (Headers) สำหรับการส่งข้อมูลเป็น JSON
-                $headers = [
-                    "Content-Type: application/json"
-                ];
-
-                // แปลงข้อมูลเป็น JSON
-                $json_data = json_encode($data_checkin);
-
-                // ใช้ cURL ส่งข้อมูลไปยัง Flask API
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);  // กำหนด Headers
-                curl_setopt($ch, CURLOPT_POST, true);  // ใช้ POST
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);  // ส่งข้อมูล
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // สำคัญมากสำหรับ error/debug
-
-                $response = curl_exec($ch);
-
-                if (curl_errno($ch)) {
-                    error_log('Flask API Error: ' . curl_error($ch));
-                }
-
-                curl_close($ch);
+                sendAsyncRequest("http://192.168.1.154:8000/", $data_checkin);
             }
-            
-            // หมายเหตุ: ไม่ใช้ return ภายใน while loop
-            
+                        
         } else {
             $message = "เกิดข้อผิดพลาด: " . $stmt->error;
         }
@@ -179,7 +168,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </form>
 
     <?php if (!empty($message)): ?>
-        <div class="message"><?= $message ?></div>
+        <div class="message" id="message-box"><?= $message ?></div>
+        <script>
+            // ใช้ JavaScript เพื่อให้ข้อความแสดงทันที
+            document.getElementById('message-box').style.display = 'block';
+        </script>
     <?php endif; ?>
 </div>
 
